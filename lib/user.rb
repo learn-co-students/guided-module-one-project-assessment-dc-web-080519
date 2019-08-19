@@ -12,11 +12,24 @@ class User < ActiveRecord::Base
     self.display_interests
   end
 
-  def add_interest(interest)
+  def add_interest
+    # save array of possible new interests to variable
+    possible_interests = Interest.all - self.interests
+    # display list of possible interests
+    puts "Please select an interest to add to your profile:"
+    possible_interests.each_with_index do |interest, index|
+      puts "#{index + 1}. #{interest.name}"
+    end
+    # user selects index of interest to add & is converted to array index
+    input = gets.chomp
+    index = input.to_i - 1
+    # Interest and User linked in database
     new_interest = UserInterest.find_or_create_by(
       user_id: self.id,
-      interest_id: Interest.get_id(interest)
+      interest_id: (possible_interests[index].id)
     )
+    # User instance updated in Ruby
+    self.interests << possible_interests[index]
   end
 
   def display_interests
