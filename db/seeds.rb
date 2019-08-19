@@ -1,5 +1,5 @@
 ### INTERESTS ###
-Interest.find_or_create_by(name: "Food")
+food = Interest.find_or_create_by(name: "Food")
 Interest.find_or_create_by(name: "Board Games")
 Interest.find_or_create_by(name: "Photography")
 Interest.find_or_create_by(name: "Music")
@@ -14,5 +14,10 @@ interests = Interest.all
 
 
 ### USERS ###
+test = User.find_or_create_by(name: "Test")
+test.add_interest("Photography")
+test.add_interest("Nature")
 
 
+binding.pry
+0

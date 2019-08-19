@@ -10,6 +10,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 2019_08_19_155238) do
+
+  create_table "events", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.string "location"
+    t.datetime "event_datetime"
+  end
+
+  create_table "interest_events", force: :cascade do |t|
+    t.integer "interest_id"
+    t.integer "event_id"
+  end
+
+  create_table "interests", force: :cascade do |t|
+    t.string "name"
+  end
+
+  create_table "rsvps", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "event_id"
+  end
+
+  create_table "user_interests", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "interest_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "user_name"
+    t.string "name"
+    t.string "location"
+  end
 
 end
