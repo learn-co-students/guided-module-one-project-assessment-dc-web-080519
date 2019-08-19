@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
   has_many :rsvps
   has_many :events, through: :rsvps
 
-  
+
   def add_interest(interest)
     new_interest = UserInterest.find_or_create_by(
       user_id: self.id,
