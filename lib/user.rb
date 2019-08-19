@@ -4,6 +4,13 @@ class User < ActiveRecord::Base
   has_many :rsvps
   has_many :events, through: :rsvps
 
+  def display_profile
+    puts "username: #{self.user_name}"
+    puts "Name: #{self.name}"
+    puts "Location: #{self.location}"
+    puts "Interests:"
+    self.display_interests
+  end
 
   def add_interest(interest)
     new_interest = UserInterest.find_or_create_by(
@@ -28,11 +35,25 @@ class User < ActiveRecord::Base
     index = input.to_i - 1
     # save the interest instance to remove as a variable
     remove = self.interests[index]
-
     # delete saved interest instance and remove its associations
     self.interests.delete(remove)
     puts "#{remove.name} was removed from your interests."
-    #binding.pry
   end
 
+  def find_events
+    # compare user interests against events' interests
+    matching_events = Event.all.find_all do |event|
+      # return any Events with overlapping Interests
+      !(self.interests & event.interests).empty?
+    end
+    # print a list of matching events for the user
+    matching_events.each_with_index do |event, index|
+      puts "#{index + 1}. #{event.name}"
+    end
+    puts ""
+    puts "Please select an event to see more details on."
+    input = gets.chomp
+    index = input.to_i - 1
+    matching_events[index].display_details
+  end
 end
