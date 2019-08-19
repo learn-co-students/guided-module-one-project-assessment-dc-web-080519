@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
   has_many :rsvps
   has_many :events, through: :rsvps
 
+  
   def add_interest(interest)
     new_interest = UserInterest.find_or_create_by(
       user_id: self.id,
@@ -23,12 +24,16 @@ class User < ActiveRecord::Base
     puts "Please enter number of interest to remove"
     # display interests
     self.display_interests
-    # get user input
+    # get user input and convert to array index of user's interests
     input = gets.chomp
-    binding.pry
-    # match user input to index of listed interest
-    
-    # remove that interest from array
+    index = input.to_i - 1
+    # save the interest instance to remove as a variable
+    remove = self.interests[index]
+
+    # delete saved interest instance and remove its associations
+    self.interests.delete(remove)
+    puts "#{remove.name} was removed from your interests."
+    #binding.pry
   end
 
 end

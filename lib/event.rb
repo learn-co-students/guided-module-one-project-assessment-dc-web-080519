@@ -3,4 +3,10 @@ class Event < ActiveRecord::Base
     has_many :interests, through: :interest_events
     has_many :rsvps
     has_many :users, through: :rsvps
+
+    def assign_interests
+        
+
+
+
 end
