@@ -4,22 +4,23 @@ class User < ActiveRecord::Base
     has_many :rsvps
     has_many :events, through: :rsvps
 
-    def my_interests
-        User_Interests.all.find_all do |interests|
-            interests.user_id  == self.id
+
+    def display_interests
+        self.interests.each do |interest|
+            puts "#{interest.index + 1}. #{interest.name}"
         end
     end
 
-    def display_interests
-        counter = 1
-        self.my_interests.each do |my_interests|
-            puts "#{counter}. my_interests"
-            counter += 1
-        end
+    def get_interest_id(selected_interest)
+        Interest.all.find do |interest|
+            interest.name == selected_interest
+        end.id
     end
 
     def add_interest(interest)
-        self.my_interests << interest
+            new_interest = UserInterest.new
+            new_interest.user_id = self.id
+            new_interest.interest_id = (get_interest_id(interest))
     end
 
     def remove_interest(interest)
