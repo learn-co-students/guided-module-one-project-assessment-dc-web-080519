@@ -1,9 +1,7 @@
 require_relative '../config/environment'
 
-test = User.find_or_create_by(name: "Test")
-test.add_interest("Photography")
-test.add_interest("Nature")
+new_event = Event.find_or_create_by(name: "Smash Party")
+new_event.assign_interests(["Board Games", "Nature"])
 
-test.remove_interest
-
-# binding.pry
+binding.pry
+0

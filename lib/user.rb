@@ -15,7 +15,6 @@ class User < ActiveRecord::Base
   def display_interests
     self.interests.each_with_index do |interest, index|
       puts "#{index + 1}. #{interest.name}"
-      interest
     end
   end
 
