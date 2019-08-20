@@ -1,9 +1,9 @@
 class CommandLineInterface
   attr_accessor :user
 
-###############################################################################
-##### HELPER METHODS ##########################################################
-###############################################################################
+  ###############################################################################
+  ##### HELPER METHODS ##########################################################
+  ###############################################################################
 
   # create new CLI instance and call #welcome on this new run
   def self.runner
@@ -19,6 +19,7 @@ class CommandLineInterface
   # take in and standardize user input
   def get_input
     input = gets.chomp
+    self.check_exit(input.downcase)
     input.downcase
   end
 
@@ -26,7 +27,7 @@ class CommandLineInterface
   # (when giving them numbered list options)
   def input_to_index
     input = gets.chomp
-    self.check_exit(input)
+    self.check_exit(input.downcase)
     # TODO: make sure input is number
     # TODO: make sure index is valid for array
     index = input.to_i - 1
@@ -59,11 +60,11 @@ class CommandLineInterface
     end
   end
 
-###############################################################################
-##### SESSION METHODS #########################################################
-###############################################################################
+  ###############################################################################
+  ##### SESSION METHODS #########################################################
+  ###############################################################################
 
-########## LANDING PAGE ###############################
+  ########## LANDING PAGE ###############################
 
   # start the program
   # landing page with login options
@@ -82,7 +83,6 @@ class CommandLineInterface
 
   # process user input from welcome screen
   def welcome_input_handler(input)
-    self.check_exit(input)
     if input == "new"
       self.create_new_user
     elsif input == "returning"
@@ -93,7 +93,7 @@ class CommandLineInterface
     end
   end
 
-########## NEW USER ###############################
+  ########## NEW USER ###############################
 
   # new screen draw for creating new user name
   def create_new_user
@@ -104,7 +104,6 @@ class CommandLineInterface
 
   # determine if username already exists
   def new_user_input_handler(username)
-    self.check_exit(username)
     if User.find_by(user_name: username)
       puts "That user name already exists."
       sleep 0.7
@@ -116,30 +115,42 @@ class CommandLineInterface
 
   # if username is valid, create profile
   def build_profile(username)
+    @user = User.new(user_name: username)
     puts "*Create your user profile*"
     puts
     puts "Please enter your full name"
-    name = gets.chomp
-    self.check_exit(name)
-    self.clear
+    self.set_name(gets.chomp)
     puts "Please enter the number of your location"
     # call helper method to choose location from list of valid option
-    location = self.choose_location
+    self.choose_location
     # create, but don't yet save, new User instance
-    @user = User.new(user_name: username, name: name, location: location)
     # call helper method to add interests to this user
-    self.clear
     self.choose_interests
+  end
+
+  def set_name(name)
+    self.check_exit(name.downcase)
+    self.user.name = name
+    self.clear
   end
 
   # provide user a list of valid locations & return the one they select
   def choose_location
-    locations = ["Washington D.C.", "New York City", "Chicago", "Los Angeles"]
+    current_location = []
+    current_location << self.user.location
+    locations = [
+      "Washington D.C.",
+      "New York City",
+      "Chicago",
+      "Los Angeles"
+      ] - current_location
+
     locations.each_with_index do |location, index|
       puts "#{index + 1}. #{location}"
     end # TODO: refactor #list_array into normal & object-based version
     index = self.input_to_index
-    return locations[index]
+    self.clear
+    self.user.location = locations[index]
   end
 
   # let user add an interest, with option to repeat or go to profile
@@ -159,7 +170,6 @@ class CommandLineInterface
   # add another interest or go to profile
   # after user has added interest
   def choose_interests_handler(input)
-    self.check_exit(input)
     if input == "more"
       self.clear
       self.choose_interests
@@ -173,7 +183,7 @@ class CommandLineInterface
     end
   end
 
-########## RETURNING USER ###############################
+  ########## RETURNING USER ###############################
 
   def login_page
     self.clear
@@ -182,7 +192,6 @@ class CommandLineInterface
   end
 
   def login_handler(username)
-    self.check_exit(username)
     if User.find_by(user_name: username)
       @user = User.find_by(user_name: username)
       self.display_user_profile
@@ -193,7 +202,6 @@ class CommandLineInterface
   end
 
   def login_error_handler(input)
-    self.check_exit(input)
     if input == "retry"
       self.login_page
     elsif input == "new"
@@ -204,12 +212,13 @@ class CommandLineInterface
     end
   end
 
-########## MAIN PROFILE PAGE ###############################
+  ########## MAIN PROFILE PAGE ###############################
 
   # landing page for user profile
   def display_user_profile
     self.clear
     puts "username: #{self.user.user_name}"
+    puts
     puts "Name: #{self.user.name}"
     puts "Location: #{self.user.location}"
     puts "Interests:"
@@ -220,15 +229,53 @@ class CommandLineInterface
     self.profile_handler(self.get_input)
   end
 
+  # process user input from main profile page
+  # reroute to appropriate page/function
   def profile_handler(input)
-    self.check_exit(input)
     if input == "edit"
-      self.profile_edit #TODO : define method
+      self.profile_edit
     elsif input == "events"
       self.find_events #TODO : re-factor user method -find_events and event method -display details
     else
       self.invalid_input_prompt
       self.display_user_profile
+    end
+  end
+
+  ########## EDITING PROFILE ###############################
+  def profile_edit
+    self.clear
+    puts <<-ENTRY
+    Enter the number of the profile information you want to edit:
+
+    0. Go Back
+
+    1. Name
+    2. Location
+    3. Interests
+    ENTRY
+    self.profile_edit_handler(self.get_input)
+  end
+
+  def profile_edit_handler(input)
+    if input == "0"
+      self.display_user_profile
+    elsif
+      input == "1"
+      self.clear
+      puts "Please enter your new name:"
+      self.set_name(gets.chomp)
+      self.user.save
+      self.display_user_profile
+    elsif input == "2"
+      self.clear
+      puts "Please enter your new location:"
+      self.choose_location
+      self.user.save
+      self.display_user_profile
+    elsif input == "3"
+      self.clear
+      self.add_or_delete_interests # TODO: define method
     end
   end
 
