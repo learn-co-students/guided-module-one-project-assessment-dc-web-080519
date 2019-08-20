@@ -24,6 +24,7 @@ class CommandLineInterface
   # (when giving them numbered list options)
   def input_to_index
     input = gets.chomp
+    self.check_exit(input)
     # TODO: make sure input is number
     # TODO: make sure index is valid for array
     index = input.to_i - 1
@@ -79,7 +80,7 @@ class CommandLineInterface
     if input == "new"
       self.create_new_user
     elsif input == "returning"
-      self.login_page # TODO: write method
+      self.login_page 
     else
       self.invalid_input_prompt
       welcome
@@ -111,12 +112,15 @@ class CommandLineInterface
     puts
     puts "Please enter your full name"
     name = gets.chomp
+    self.check_exit(name)
+    self.clear
     puts "Please enter the number of your location"
     # call helper method to choose location from list of valid option
     location = self.choose_location
     # create, but don't yet save, new User instance
     @user = User.new(user_name: username, name: name, location: location)
     # call helper method to add interests to this user
+    self.clear
     self.choose_interests
   end
 
@@ -139,6 +143,7 @@ class CommandLineInterface
     # get user choice and call User#add_interest to create interest association
     index = self.input_to_index
     self.user.add_interest(possible_interests[index])
+    self.clear
     puts "Type 'more' to add more interests or 'done' to view your profile"
     self.choose_interests_handler(self.get_input)
   end
@@ -167,5 +172,38 @@ class CommandLineInterface
     puts "Location: #{self.user.location}"
     puts "Interests:"
     self.list_array(self.user.interests)
+    puts
+    puts "Type 'edit' to change your profile details or interests"
+    puts "Type 'events' to find events in your area matching your interests"
   end
+
+    def login_page
+      self.clear
+      puts "Welcome back, please enter your username"
+      self.login_handler(self.get_input)
+    end
+
+    def login_handler(username)
+      self.check_exit(username)
+      if User.find_by(user_name: username)
+        @user = User.find_by(user_name: username)
+        self.display_user_profile
+      else
+        puts "That username does not exist, type 'retry' to try another username OR type 'new' to create a new username"
+        self.login_error_handler(self.get_input)
+      end
+    end
+
+    def login_error_handler(input)
+      self.check_exit(input)
+      if input == "retry"
+        self.login_page
+      elsif input == "new"
+        self.create_new_user
+      else
+        self.invalid_input_prompt
+        self.login_page
+      end
+    end
+
 end
