@@ -23,11 +23,6 @@ class User < ActiveRecord::Base
     # user selects index of interest to add & is converted to array index
     input = gets.chomp
     index = input.to_i - 1
-    # Interest and User linked in database
-    new_interest = UserInterest.find_or_create_by(
-      user_id: self.id,
-      interest_id: possible_interests[index].id
-    )
     # User instance updated in Ruby
     self.interests << possible_interests[index]
   end

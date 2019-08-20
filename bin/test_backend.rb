@@ -1,8 +1,10 @@
 require_relative '../config/environment'
 
-# User.destroy_all
-# UserInterest.destroy_all
-# Event.destroy_all
+User.destroy_all
+UserInterest.destroy_all
+Event.destroy_all
+InterestEvent.destroy_all
+
 
 event1 = Event.find_or_create_by(
   name: "Smash Party",
@@ -29,7 +31,9 @@ user1 = User.create(
   location: "Adams Morgan"
 )
 
-user1.add_interest
+user1.interests = [Interest.find_by(name: "Photography"), Interest.find_by(name: "Nature")]
+
+# user1.add_interest
 
 binding.pry
 0
