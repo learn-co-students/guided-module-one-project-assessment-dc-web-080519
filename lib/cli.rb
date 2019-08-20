@@ -222,6 +222,7 @@ class CommandLineInterface
     puts "Name: #{self.user.name}"
     puts "Location: #{self.user.location}"
     puts "Interests:"
+    puts
     self.list_array(self.user.interests)
     puts
     puts "Type 'edit' to change your profile details or interests"
@@ -243,16 +244,18 @@ class CommandLineInterface
   end
 
   ########## EDITING PROFILE ###############################
+
   def profile_edit
     self.clear
     puts <<-ENTRY
     Enter the number of the profile information you want to edit:
 
-    0. Go Back
-
     1. Name
     2. Location
     3. Interests
+
+    0. Go Back
+
     ENTRY
     self.profile_edit_handler(self.get_input)
   end
@@ -275,8 +278,37 @@ class CommandLineInterface
       self.display_user_profile
     elsif input == "3"
       self.clear
-      self.add_or_delete_interests # TODO: define method
+      self.add_or_remove_interests
+    else
+      self.invalid_input_prompt
+      self.profile_edit
     end
   end
 
+  def add_or_remove_interests
+    self.clear
+    puts <<-TEXT
+    Would you like to add or remove interests?
+
+    1. Add new interests
+    2. Remove current interests
+
+    0. Go Back
+    TEXT
+    self.add_or_remove_interests_handler(self.get_input)
+  end
+
+  def add_or_remove_interests_handler(input)
+    if input == "0"
+      self.profile_edit
+    elsif input == "1"
+      self.clear
+      self.choose_interests
+    elsif input == "2"
+      ### write some functions to remove interests
+    else
+      self.invalid_input_prompt
+      self.add_or_remove_interests
+    end
+  end
 end
