@@ -165,8 +165,38 @@ class CommandLineInterface
     end
   end
 
+  def login_page
+    self.clear
+    puts "Welcome back, please enter your username"
+    self.login_handler(self.get_input)
+  end
+
+  def login_handler(username)
+    self.check_exit(username)
+    if User.find_by(user_name: username)
+      @user = User.find_by(user_name: username)
+      self.display_user_profile
+    else
+      puts "That username does not exist, type 'retry' to try another username OR type 'new' to create a new username"
+      self.login_error_handler(self.get_input)
+    end
+  end
+
+  def login_error_handler(input)
+    self.check_exit(input)
+    if input == "retry"
+      self.login_page
+    elsif input == "new"
+      self.create_new_user
+    else
+      self.invalid_input_prompt
+      self.login_page
+    end
+  end
+
   # landing page for user profile
   def display_user_profile
+    self.clear
     puts "username: #{self.user.user_name}"
     puts "Name: #{self.user.name}"
     puts "Location: #{self.user.location}"
@@ -175,35 +205,19 @@ class CommandLineInterface
     puts
     puts "Type 'edit' to change your profile details or interests"
     puts "Type 'events' to find events in your area matching your interests"
+    self.profile_handler(self.get_input)
   end
 
-    def login_page
-      self.clear
-      puts "Welcome back, please enter your username"
-      self.login_handler(self.get_input)
+  def profile_handler(input)
+    self.check_exit(input)
+    if input == "edit"
+      self.profile_edit #TODO : define method
+    elsif input == "events"
+      self.find_events #TODO : re-factor user method -find_events and event method -display details
+    else
+      self.invalid_input_prompt
+      self.display_user_profile
     end
-
-    def login_handler(username)
-      self.check_exit(username)
-      if User.find_by(user_name: username)
-        @user = User.find_by(user_name: username)
-        self.display_user_profile
-      else
-        puts "That username does not exist, type 'retry' to try another username OR type 'new' to create a new username"
-        self.login_error_handler(self.get_input)
-      end
-    end
-
-    def login_error_handler(input)
-      self.check_exit(input)
-      if input == "retry"
-        self.login_page
-      elsif input == "new"
-        self.create_new_user
-      else
-        self.invalid_input_prompt
-        self.login_page
-      end
-    end
+  end
 
 end
