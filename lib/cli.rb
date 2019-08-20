@@ -1,7 +1,9 @@
 class CommandLineInterface
   attr_accessor :user
 
-  ####### HELPER METHODS #######
+###############################################################################
+##### HELPER METHODS ##########################################################
+###############################################################################
 
   # create new CLI instance and call #welcome on this new run
   def self.runner
@@ -57,7 +59,11 @@ class CommandLineInterface
     end
   end
 
-  ####### SESSION METHODS #######
+###############################################################################
+##### SESSION METHODS #########################################################
+###############################################################################
+
+########## LANDING PAGE ###############################
 
   # start the program
   # landing page with login options
@@ -86,6 +92,8 @@ class CommandLineInterface
       welcome
     end
   end
+
+########## NEW USER ###############################
 
   # new screen draw for creating new user name
   def create_new_user
@@ -165,17 +173,7 @@ class CommandLineInterface
     end
   end
 
-  # landing page for user profile
-  def display_user_profile
-    puts "username: #{self.user.user_name}"
-    puts "Name: #{self.user.name}"
-    puts "Location: #{self.user.location}"
-    puts "Interests:"
-    self.list_array(self.user.interests)
-    puts
-    puts "Type 'edit' to change your profile details or interests"
-    puts "Type 'events' to find events in your area matching your interests"
-  end
+########## RETURNING USER ###############################
 
   def login_page
     self.clear
@@ -205,5 +203,20 @@ class CommandLineInterface
       self.login_page
     end
   end
+
+########## MAIN PROFILE PAGE ###############################
+
+  # landing page for user profile
+  def display_user_profile
+    puts "username: #{self.user.user_name}"
+    puts "Name: #{self.user.name}"
+    puts "Location: #{self.user.location}"
+    puts "Interests:"
+    self.list_array(self.user.interests)
+    puts
+    puts "Type 'edit' to change your profile details or interests"
+    puts "Type 'events' to find events in your area matching your interests"
+  end
+
 
 end
