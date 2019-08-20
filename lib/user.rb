@@ -25,6 +25,7 @@ class User < ActiveRecord::Base
     index = input.to_i - 1
     # User instance updated in Ruby
     self.interests << possible_interests[index]
+    self.save
   end
 
   def display_interests

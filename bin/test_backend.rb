@@ -1,9 +1,9 @@
 require_relative '../config/environment'
-
-User.destroy_all
-UserInterest.destroy_all
-Event.destroy_all
-InterestEvent.destroy_all
+#
+# User.destroy_all
+# UserInterest.destroy_all
+# Event.destroy_all
+# InterestEvent.destroy_all
 
 
 event1 = Event.find_or_create_by(
@@ -25,7 +25,7 @@ event3.assign_interests(["Technology", "Drinks"])
 event4 = Event.find_or_create_by(name: "Photos of Birds")
 event4.assign_interests(["Photography", "Nature"])
 
-user1 = User.create(
+user1 = User.find_or_create_by(
   user_name: "user1",
   name: "User 1",
   location: "Adams Morgan"
