@@ -89,7 +89,7 @@ class CommandLineInterface
       self.login_page
     else
       self.invalid_input_prompt
-      welcome
+      self.welcome
     end
   end
 
