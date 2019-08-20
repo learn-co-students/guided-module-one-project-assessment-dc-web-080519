@@ -1,26 +1,45 @@
 class CommandLineInterface
-  
   attr_accessor :user
 
+  ####### HELPER METHODS #######
+
+  # create new CLI instance and call #welcome on this new run
   def self.runner
-    self.welcome
+    new_run = self.new
+    new_run.welcome
   end
-  
-  def self.clear
+
+  # clear the terminal screen
+  def clear
     puts `clear`
   end
-  
-  def self.get_input
+
+  # take in and standardize user input
+  def get_input
     input = gets.chomp
     input.downcase
   end
 
-  def self.invalid_input_prompt
+  # convert user input into index for use with arrays
+  # (when giving them numbered list options)
+  def input_to_index
+    input = gets.chomp
+    # TODO: make sure input is number
+    # TODO: make sure index is valid for array
+    index = input.to_i - 1
+  end
+
+  # display brief error message
+  # for use as final condition when getting user input
+  def invalid_input_prompt
     puts "Please enter a valid input"
+    # pause screen on error message for set period of time
     sleep 0.7
   end
 
-  def self.check_exit(input)
+  # check if user wants to exit the program
+  # to be included as first call of any input handler method
+  def check_exit(input)
     exit_array = ["e", "q", "quit", "exit"]
     exit_array.each do |exit_term|
       if input == exit_term
@@ -30,7 +49,20 @@ class CommandLineInterface
     end
   end
 
-  def self.welcome
+  # convert an array into a human-readable numbered list format
+  def list_array(arr)
+    arr.each_with_index do |item, index|
+      puts "#{index + 1}. #{item.name}"
+    end
+  end
+
+  ####### SESSION METHODS #######
+
+  # start the program
+  # landing page with login options
+  # called by CLI.runner, in turn called by bin/run.rb
+  def welcome
+    # clear the screen and show logo, login option
     self.clear
     a = Artii::Base.new :font => 'doh'
     puts a.asciify('FriendUp')
@@ -41,50 +73,99 @@ class CommandLineInterface
     self.welcome_input_handler(self.get_input)
   end
 
-  def self.welcome_input_handler(input)
+  # process user input from welcome screen
+  def welcome_input_handler(input)
     self.check_exit(input)
     if input == "new"
-      self.create_new_user # DEFINE METHOD
+      self.create_new_user
     elsif input == "returning"
-      self.login_page #DEFINE METHOD
+      self.login_page # TODO: write method
     else
       self.invalid_input_prompt
-      self.welcome
+      welcome
     end
   end
 
-  def self.choose_locations
-    locations = ["Washington D.C.", "New York City", "Chicago", "Los Angeles"]
-    locations.each_with_index do |location, index|
-      puts "#{index + 1}. #{location}"
-    end
-    input = gets.chomp
-    index = input.to_i - 1
-    return locations[index]
-  end
-
-  def self.new_user_input_handler(input)
-    self.check_exit(input)
-    if User.find_by(user_name: input)
-      puts "That user name already exists."
-      sleep 0.7
-      self.create_new_user
-    else
-      puts "*Create your user profile*"
-      puts "Please enter your full name"
-      name = gets.chomp
-      puts "Please enter the number of your location"
-      location = self.choose_locations
-      user = User.new(user_name: input, name: name, location: location)
-      self.set_starting_interests
-      # user.add_interest
-    end
-  end
-
-  def self.create_new_user
+  # new screen draw for creating new user name
+  def create_new_user
     self.clear
     puts "Please enter a desired user name"
     self.new_user_input_handler(self.get_input)
   end
-  
+
+  # determine if username already exists
+  def new_user_input_handler(username)
+    self.check_exit(username)
+    if User.find_by(user_name: username)
+      puts "That user name already exists."
+      sleep 0.7
+      self.create_new_user
+    else
+      self.build_profile(username)
+    end
+  end
+
+  # if username is valid, create profile
+  def build_profile(username)
+    puts "*Create your user profile*"
+    puts
+    puts "Please enter your full name"
+    name = gets.chomp
+    puts "Please enter the number of your location"
+    # call helper method to choose location from list of valid option
+    location = self.choose_location
+    # create, but don't yet save, new User instance
+    @user = User.new(user_name: username, name: name, location: location)
+    # call helper method to add interests to this user
+    self.choose_interests
+  end
+
+  # provide user a list of valid locations & return the one they select
+  def choose_location
+    locations = ["Washington D.C.", "New York City", "Chicago", "Los Angeles"]
+    locations.each_with_index do |location, index|
+      puts "#{index + 1}. #{location}"
+    end # TODO: refactor #list_array into normal & object-based version
+    index = self.input_to_index
+    return locations[index]
+  end
+
+  # let user add an interest, with option to repeat or go to profile
+  def choose_interests
+    puts "Please select an interest to add to your profile:"
+    # list all available interests the user hasn't added to their profile
+    possible_interests = Interest.all - self.user.interests
+    self.list_array(possible_interests)
+    # get user choice and call User#add_interest to create interest association
+    index = self.input_to_index
+    self.user.add_interest(possible_interests[index])
+    puts "Type 'more' to add more interests or 'done' to view your profile"
+    self.choose_interests_handler(self.get_input)
+  end
+
+  # add another interest or go to profile
+  # after user has added interest
+  def choose_interests_handler(input)
+    self.check_exit(input)
+    if input == "more"
+      self.clear
+      self.choose_interests
+    elsif input == "done"
+      self.clear
+      self.user.save
+      self.display_user_profile
+    else
+      self.invalid_input_prompt
+      self.choose_interests
+    end
+  end
+
+  # landing page for user profile
+  def display_user_profile
+    puts "username: #{self.user.user_name}"
+    puts "Name: #{self.user.name}"
+    puts "Location: #{self.user.location}"
+    puts "Interests:"
+    self.list_array(self.user.interests)
+  end
 end

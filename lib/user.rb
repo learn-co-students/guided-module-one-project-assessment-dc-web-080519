@@ -4,40 +4,40 @@ class User < ActiveRecord::Base
   has_many :rsvps
   has_many :events, through: :rsvps
 
-  def display_profile
-    puts "username: #{self.user_name}"
-    puts "Name: #{self.name}"
-    puts "Location: #{self.location}"
-    puts "Interests:"
-    self.display_interests
+  # def display_profile
+  #   puts "username: #{self.user_name}"
+  #   puts "Name: #{self.name}"
+  #   puts "Location: #{self.location}"
+  #   puts "Interests:"
+  #   self.display_interests
+  # end
+
+  # def input_to_index
+  #   input = gets.chomp
+  #   index = input.to_i - 1
+  # end
+
+  # def list_array(arr)
+  #   arr.each_with_index do |item, index|
+  #     puts "#{index + 1}. #{item.name}"
+  #   end
+  # end
+
+  def add_interest(interest)
+    # # save array of possible new interests to variable
+    # possible_interests = Interest.all - self.interests
+    # # display list of possible interests
+    # puts "Please select an interest to add to your profile:"
+    # self.list_array(possible_interests)
+    # # user selects index of interest to add & is converted to array index
+    # index = self.input_to_index
+    # # User instance updated in Ruby
+    self.interests << interest
   end
 
-  def input_to_index
-    input = gets.chomp
-    index = input.to_i - 1
-  end
-
-  def list_array(arr)
-    arr.each_with_index do |item, index|
-      puts "#{index + 1}. #{item.name}"
-    end
-  end
-
-  def add_interest
-    # save array of possible new interests to variable
-    possible_interests = Interest.all - self.interests
-    # display list of possible interests
-    puts "Please select an interest to add to your profile:"
-    self.list_array(possible_interests)
-    # user selects index of interest to add & is converted to array index
-    index = self.input_to_index
-    # User instance updated in Ruby
-    self.interests << possible_interests[index]
-  end
-
-  def display_interests
-    self.list_array(self.interests)
-  end
+  # def display_interests
+  #   self.list_array(self.interests)
+  # end
 
   def remove_interest
     # prompt user
