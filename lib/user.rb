@@ -8,18 +8,21 @@ class User < ActiveRecord::Base
     self.interests << interest
   end
 
-  def remove_interest
-    # prompt user
-    puts "Please enter number of interest to remove"
-    # display interests
-    self.display_interests
-    # get user input and convert to array index of user's interests
-    index = self.input_to_index
-    # save the interest instance to remove as a variable
-    remove = self.interests[index]
-    # delete saved interest instance and remove its associations
-    self.interests.delete(remove)
-    puts "#{remove.name} was removed from your interests."
+  def remove_interest(interest_to_delete)
+  #   # prompt user
+  #   puts "Please enter number of interest to remove"
+  #   # display interests
+  #   self.display_interests
+  #   # get user input and convert to array index of user's interests
+  #   index = self.input_to_index
+  #   # save the interest instance to remove as a variable
+  #   remove = self.interests[index]
+  #   # delete saved interest instance and remove its associations
+  #   self.interests.delete(remove)
+  #   puts "#{remove.name} was removed from your interests."
+    self.interests.delete(interest_to_delete)
+    self.save
+    
   end
 
   def find_events

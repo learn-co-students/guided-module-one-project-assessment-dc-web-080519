@@ -306,9 +306,25 @@ class CommandLineInterface
       self.choose_interests
     elsif input == "2"
       ### write some functions to remove interests
+      self.clear
+      self.remove_interests
     else
       self.invalid_input_prompt
       self.add_or_remove_interests
     end
+  end
+
+  def remove_interests
+    puts "Please enter number of interest to remove"
+    # display interests
+    self.list_array(self.user.interests)
+    # get user input and convert to array index of user's interests
+    index = self.input_to_index
+    # save the interest instance to remove as a variable
+    self.user.remove_interest(self.user.interests[index])
+    # remove = self.user.interests[index]
+    # delete saved interest instance and remove its associations
+    self.clear
+    self.display_user_profile
   end
 end
