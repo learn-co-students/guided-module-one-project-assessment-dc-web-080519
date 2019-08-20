@@ -33,7 +33,6 @@ class User < ActiveRecord::Base
     index = self.input_to_index
     # User instance updated in Ruby
     self.interests << possible_interests[index]
-    self.save
   end
 
   def display_interests
@@ -66,5 +65,13 @@ class User < ActiveRecord::Base
     puts "Please select an event to see more details on."
     index = self.input_to_index
     matching_events[index].display_details
+  end
+
+  def rsvp_to(event)
+    self.events << event
+  end
+
+  def view_rsvps
+    self.list_array(self.events)
   end
 end

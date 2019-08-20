@@ -15,10 +15,14 @@ class Event < ActiveRecord::Base
     end
   end
 
-  def display_interests
-    self.interests.each_with_index do |interest, index|
-      puts "#{index + 1}. #{interest.name}"
+  def list_array(arr)
+    arr.each_with_index do |item, index|
+      puts "#{index + 1}. #{item.name}"
     end
+  end
+
+  def display_interests
+    list_array(self.interests)
   end
 
   def display_details
@@ -26,7 +30,7 @@ class Event < ActiveRecord::Base
     puts "Event Description: #{self.description}"
     puts "Location: #{self.location}"
     puts "Date/Time: #{self.event_datetime}"
-    # to be added later:
-    # puts self.rsvps
+    puts "Attendees:"
+    list_array(self.users)
   end
 end
