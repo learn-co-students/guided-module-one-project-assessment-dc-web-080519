@@ -80,7 +80,7 @@ class CommandLineInterface
     if input == "new"
       self.create_new_user
     elsif input == "returning"
-      self.login_page 
+      self.login_page
     else
       self.invalid_input_prompt
       welcome
@@ -177,33 +177,33 @@ class CommandLineInterface
     puts "Type 'events' to find events in your area matching your interests"
   end
 
-    def login_page
-      self.clear
-      puts "Welcome back, please enter your username"
-      self.login_handler(self.get_input)
-    end
+  def login_page
+    self.clear
+    puts "Welcome back, please enter your username"
+    self.login_handler(self.get_input)
+  end
 
-    def login_handler(username)
-      self.check_exit(username)
-      if User.find_by(user_name: username)
-        @user = User.find_by(user_name: username)
-        self.display_user_profile
-      else
-        puts "That username does not exist, type 'retry' to try another username OR type 'new' to create a new username"
-        self.login_error_handler(self.get_input)
-      end
+  def login_handler(username)
+    self.check_exit(username)
+    if User.find_by(user_name: username)
+      @user = User.find_by(user_name: username)
+      self.display_user_profile
+    else
+      puts "That username does not exist, type 'retry' to try another username OR type 'new' to create a new username"
+      self.login_error_handler(self.get_input)
     end
+  end
 
-    def login_error_handler(input)
-      self.check_exit(input)
-      if input == "retry"
-        self.login_page
-      elsif input == "new"
-        self.create_new_user
-      else
-        self.invalid_input_prompt
-        self.login_page
-      end
+  def login_error_handler(input)
+    self.check_exit(input)
+    if input == "retry"
+      self.login_page
+    elsif input == "new"
+      self.create_new_user
+    else
+      self.invalid_input_prompt
+      self.login_page
     end
+  end
 
 end
