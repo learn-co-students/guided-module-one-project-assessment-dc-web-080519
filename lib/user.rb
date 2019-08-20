@@ -12,26 +12,32 @@ class User < ActiveRecord::Base
     self.display_interests
   end
 
+  def input_to_index
+    input = gets.chomp
+    index = input.to_i - 1
+  end
+
+  def list_array(arr)
+    arr.each_with_index do |item, index|
+      puts "#{index + 1}. #{item.name}"
+    end
+  end
+
   def add_interest
     # save array of possible new interests to variable
     possible_interests = Interest.all - self.interests
     # display list of possible interests
     puts "Please select an interest to add to your profile:"
-    possible_interests.each_with_index do |interest, index|
-      puts "#{index + 1}. #{interest.name}"
-    end
+    self.list_array(possible_interests)
     # user selects index of interest to add & is converted to array index
-    input = gets.chomp
-    index = input.to_i - 1
+    index = self.input_to_index
     # User instance updated in Ruby
     self.interests << possible_interests[index]
     self.save
   end
 
   def display_interests
-    self.interests.each_with_index do |interest, index|
-      puts "#{index + 1}. #{interest.name}"
-    end
+    self.list_array(self.interests)
   end
 
   def remove_interest
@@ -40,8 +46,7 @@ class User < ActiveRecord::Base
     # display interests
     self.display_interests
     # get user input and convert to array index of user's interests
-    input = gets.chomp
-    index = input.to_i - 1
+    index = self.input_to_index
     # save the interest instance to remove as a variable
     remove = self.interests[index]
     # delete saved interest instance and remove its associations
@@ -56,13 +61,10 @@ class User < ActiveRecord::Base
       !(self.interests & event.interests).empty?
     end
     # print a list of matching events for the user
-    matching_events.each_with_index do |event, index|
-      puts "#{index + 1}. #{event.name}"
-    end
+    self.list_array(matching_events)
     puts ""
     puts "Please select an event to see more details on."
-    input = gets.chomp
-    index = input.to_i - 1
+    index = self.input_to_index
     matching_events[index].display_details
   end
 end

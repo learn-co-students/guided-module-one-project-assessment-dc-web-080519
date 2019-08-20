@@ -26,7 +26,6 @@ class Event < ActiveRecord::Base
     puts "Event Description: #{self.description}"
     puts "Location: #{self.location}"
     puts "Date/Time: #{self.event_datetime}"
-
     # to be added later:
     # puts self.rsvps
   end
