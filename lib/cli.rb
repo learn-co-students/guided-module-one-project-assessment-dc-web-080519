@@ -172,7 +172,7 @@ class CommandLineInterface
     locations.each_with_index do |location, index|
       puts "#{index + 1}. #{location}"
     end # TODO: refactor #list_array into normal & object-based version
-    index = self.input_to_index(locations)
+    index = self.process_input(locations, "self.choose_location")
     self.clear
     self.user.location = locations[index]
   end
@@ -184,11 +184,11 @@ class CommandLineInterface
     possible_interests = Interest.all - self.user.interests
     self.list_array(possible_interests)
     # get user choice and call User#add_interest to create interest association
-    index = self.input_to_index(possible_interests)
+    index = self.process_input(possible_interests, "self.add_or_remove_interests")
     self.user.add_interest(possible_interests[index])
     self.clear
     puts "Type 'more' to add more interests or 'done' to view your profile"
-    self.choose_interests_handler(self.process_input(possible_interests, "self.display_user_profile"))
+    self.choose_interests_handler(self.process_input(possible_interests, "self.add_or_remove_interests"))
   end
 
   # add another interest or go to profile
@@ -252,7 +252,7 @@ class CommandLineInterface
     puts "Type 'edit' to change your profile details or interests"
     puts "Type 'events' to find events in your area matching your interests"
     puts "Type 'rsvps' to see all events you have RSVP'd to"
-    self.profile_handler(self.process_input([],"self.display_user_profile"))
+    self.profile_handler(self.process_input([], "self.display_user_profile"))
   end
 
   # process user input from main profile page
@@ -316,18 +316,16 @@ class CommandLineInterface
     1. Add new interests
     2. Remove current interests
 
-    0. Go Back
+    Type 'back' to return to options
     TEXT
-    self.add_or_remove_interests_handler(self.get_input)
+    self.add_or_remove_interests_handler(self.process_input(["add", "remove"], "self.profile_edit"))
   end
 
   def add_or_remove_interests_handler(input)
-    if input == "0"
-      self.profile_edit
-    elsif input == "1"
+    if input == 0
       self.clear
       self.choose_interests
-    elsif input == "2"
+    elsif input == 1
       ### write some functions to remove interests
       self.clear
       self.remove_interests
@@ -342,7 +340,7 @@ class CommandLineInterface
     # display interests
     self.list_array(self.user.interests)
     # get user input and convert to array index of user's interests
-    index = self.input_to_index(self.user.interests)
+    index = self.process_input(self.user.interests, "self.add_or_remove_interests")
     self.user.remove_interest(self.user.interests[index])
     self.clear
     #TODO: Give user option to remove more interests
@@ -361,20 +359,19 @@ class CommandLineInterface
     else
       self.list_array(matched_events)
       puts ""
-      puts "Please select an event to see more details on or type 'back' to go back"
-      self.find_event_handler(self.get_input, matched_events)
+      puts "Please select the number of an event to see more details on or type 'back' to return to your profile"
+      self.find_event_handler(self.process_input(matched_events, "self.display_user_profile"), matched_events)
     end
   end
 
   def find_event_handler(input, matched_events)
-    if input == "back"
-      self.display_user_profile
-    else
-      index = self.input_to_index(matched_events, input)
-      self.display_event_details(matched_events[index])
-    end
+    # if input == "back"
+    #   self.display_user_profile
+    # else
+    #   # index = self.process_input(matched_events, "self.display_user_profile")
+      self.display_event_details(matched_events[input])
+    # end
   end
-
 
   def display_event_details(event)
     self.clear
@@ -391,7 +388,7 @@ class CommandLineInterface
       puts "Type 'rsvp' to add this event to your profile"
     end
     puts "Type 'back' to go back to the event list"
-    self.event_detail_handler(self.get_input, event)
+    self.event_detail_handler(self.process_input([], "self.find_events"), event)
   end
 
   def event_detail_handler(input, event)
