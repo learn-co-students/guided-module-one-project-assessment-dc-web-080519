@@ -14,26 +14,28 @@ class User < ActiveRecord::Base
     
   end
 
-  def find_events
+  def matching_events
     # compare user interests against events' interests
-    interested_events = Event.all.find_all do |event|
+    Event.all.find_all do |event|
       # return any Events with overlapping Interests
       !(self.interests & event.interests).empty?
+    end.find_all do |events_by_interest|
+      events_by_interest.location == self.location
     end
-    # print a list of matching events for the user
-    # TODO: further filter list of interested events by user location
-    self.list_array(interested_events)
-    puts ""
-    puts "Please select an event to see more details on."
-    index = self.input_to_index
-    interested_events[index].display_details
   end
 
   def rsvp_to(event)
     self.events << event
+    self.save
   end
 
-  def view_rsvps
-    self.list_array(self.events)
+  def remove_event(event)
+    self.events.delete(event)
+    self.save
   end
+
+
+  # def view_rsvps
+  #   self.list_array(self.events)
+  # end
 end

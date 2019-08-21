@@ -15,22 +15,22 @@ class Event < ActiveRecord::Base
     end
   end
 
-  def list_array(arr)
-    arr.each_with_index do |item, index|
-      puts "#{index + 1}. #{item.name}"
-    end
-  end
+  # def list_array(arr)
+  #   arr.each_with_index do |item, index|
+  #     puts "#{index + 1}. #{item.name}"
+  #   end
+  # end
 
-  def display_interests
-    list_array(self.interests)
-  end
+  # def display_interests
+  #   list_array(self.interests)
+  # end
 
-  def display_details
-    puts "Event Name: #{self.name}"
-    puts "Event Description: #{self.description}"
-    puts "Location: #{self.location}"
-    puts "Date/Time: #{self.event_datetime}"
-    puts "Attendees:"
-    list_array(self.users)
-  end
+  # def display_details
+  #   puts "Event Name: #{self.name}"
+  #   puts "Event Description: #{self.description}"
+  #   puts "Location: #{self.location}"
+  #   puts "Date/Time: #{self.event_datetime}"
+  #   puts "Attendees:"
+  #   list_array(self.users)
+  # end
 end

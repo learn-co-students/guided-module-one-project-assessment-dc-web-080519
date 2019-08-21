@@ -25,21 +25,19 @@ class CommandLineInterface
 
   # convert user input into index for use with arrays
   # (when giving them numbered list options)
-  def input_to_index(array)
-    loop do
+  def input_to_index(array, input = nil)
+    if input == nil
       input = gets.chomp
-      self.check_exit(input.downcase)
-      index = input.to_i - 1
-      newarray = [*0...array.length]
-      if newarray.include?(index)
-        return index
-      else
-        self.invalid_input_prompt
-      end
     end
-    # TODO: make sure input is number
-    # TODO: make sure index is valid for array
-    #index
+    self.check_exit(input.downcase)
+    newarray = [*0...array.length]
+    index = input.to_i - 1
+    if newarray.include?(index)
+      return index
+    else
+      self.invalid_input_prompt
+      self.input_to_index(array, gets.chomp)
+    end 
   end
 
   # display brief error message
@@ -236,6 +234,7 @@ class CommandLineInterface
     puts
     puts "Type 'edit' to change your profile details or interests"
     puts "Type 'events' to find events in your area matching your interests"
+    puts "Type 'rsvps' to see all events you have RSVP'd to"
     self.profile_handler(self.get_input)
   end
 
@@ -246,6 +245,8 @@ class CommandLineInterface
       self.profile_edit
     elsif input == "events"
       self.find_events #TODO : re-factor user method -find_events and event method -display details
+    elsif input == "rsvps"
+      self.show_rsvps
     else
       self.invalid_input_prompt
       self.display_user_profile
@@ -333,6 +334,75 @@ class CommandLineInterface
     self.clear
     #TODO: Give user option to remove more interests
     self.display_user_profile
+  end
+
+  ########## FIND EVENTS ################
+
+  def find_events
+    self.clear
+    matched_events = self.user.matching_events
+    if matched_events == []
+      puts "No events found in your location matching your interests"
+      sleep 0.7
+      self.display_user_profile
+    else 
+      self.list_array(matched_events)
+      puts ""
+      puts "Please select an event to see more details on or type 'back' to go back"
+      self.find_event_handler(self.get_input, matched_events)
+    end
+  end
+
+  def find_event_handler(input, matched_events)
+    if input == "back"
+      self.display_user_profile
+    else 
+      index = self.input_to_index(matched_events, input)
+      self.display_event_details(matched_events[index])
+    end
+  end
+      
+  
+  def display_event_details(event)
+    self.clear
+    puts "Event Name: #{event.name}"
+    puts "Event Description: #{event.description}"
+    puts "Location: #{event.location}"
+    puts "Date/Time: #{event.event_datetime}"
+    puts "Attendees:"
+    self.list_array(event.users)
+    puts
+    if self.user.events.include?(event)
+      puts "Type 'remove' to remove this event from your profile"
+    else
+      puts "Type 'rsvp' to add this event to your profile"
+    end
+    puts "Type 'back' to go back to the event list"
+    self.event_detail_handler(self.get_input, event)
+  end
+
+  def event_detail_handler(input, event)
+    if input == 'rsvp'
+      self.user.rsvp_to(event)
+      puts "You have successfully RSVP'd to #{event.name}"
+      sleep 1
+      self.find_events
+    elsif input == 'remove'
+      self.user.remove_event(event)
+      puts "You have removed your RSVP for #{event.name}"
+      sleep 1
+      self.find_events
+    elsif input == 'back'
+      self.find_events
+    else
+      self.invalid_input_prompt
+      self.display_event_details(event)
+    end
+  end
+
+  def show_rsvps
+    self.clear
+    self.list_array(self.user.events)
   end
   
 end
