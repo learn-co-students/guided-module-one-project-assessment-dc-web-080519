@@ -131,7 +131,6 @@ class CommandLineInterface
     puts
     puts "Please enter your full name"
     self.set_name(gets.chomp)
-    puts "Please enter the number of your location"
     # call helper method to choose location from list of valid option
     self.choose_location
     # create, but don't yet save, new User instance
@@ -148,6 +147,7 @@ class CommandLineInterface
   # provide user a list of valid locations & return the one they select
   def choose_location
     self.clear
+    puts "Please enter the number of your location"
     current_location = []
     current_location << self.user.location
     locations =
@@ -174,6 +174,7 @@ class CommandLineInterface
 
   # let user add an interest, with option to repeat or go to profile
   def choose_interests
+    self.clear
     puts "Please select an interest to add to your profile:"
     # list all available interests the user hasn't added to their profile
     possible_interests = Interest.all - self.user.interests
