@@ -31,13 +31,15 @@ interests = Interest.all
 
 ### EVENTS ###
 
-100.times do
+250.times do
   new_event = Event.find_or_create_by(
     name: Faker::Hipster.sentence(word_count: 3),
     description: Faker::Lorem.paragraph,
     location: locations.sample,
     event_datetime: Faker::Date.forward(days: 31)
   )
+  new_event.interests << interests.sample
+  new_event.interests << interests.sample
   new_event.interests << interests.sample
   new_event.save
 end
