@@ -25,12 +25,21 @@ class CommandLineInterface
 
   # convert user input into index for use with arrays
   # (when giving them numbered list options)
-  def input_to_index
-    input = gets.chomp
-    self.check_exit(input.downcase)
+  def input_to_index(array)
+    loop do
+      input = gets.chomp
+      self.check_exit(input.downcase)
+      index = input.to_i - 1
+      newarray = [*0...array.length]
+      if newarray.include?(index)
+        return index
+      else
+        self.invalid_input_prompt
+      end
+    end
     # TODO: make sure input is number
     # TODO: make sure index is valid for array
-    index = input.to_i - 1
+    #index
   end
 
   # display brief error message
@@ -148,7 +157,7 @@ class CommandLineInterface
     locations.each_with_index do |location, index|
       puts "#{index + 1}. #{location}"
     end # TODO: refactor #list_array into normal & object-based version
-    index = self.input_to_index
+    index = self.input_to_index(locations)
     self.clear
     self.user.location = locations[index]
   end
@@ -160,7 +169,7 @@ class CommandLineInterface
     possible_interests = Interest.all - self.user.interests
     self.list_array(possible_interests)
     # get user choice and call User#add_interest to create interest association
-    index = self.input_to_index
+    index = self.input_to_index(possible_interests)
     self.user.add_interest(possible_interests[index])
     self.clear
     puts "Type 'more' to add more interests or 'done' to view your profile"
@@ -319,12 +328,11 @@ class CommandLineInterface
     # display interests
     self.list_array(self.user.interests)
     # get user input and convert to array index of user's interests
-    index = self.input_to_index
-    # save the interest instance to remove as a variable
+    index = self.input_to_index(self.user.interests)
     self.user.remove_interest(self.user.interests[index])
-    # remove = self.user.interests[index]
-    # delete saved interest instance and remove its associations
     self.clear
+    #TODO: Give user option to remove more interests
     self.display_user_profile
   end
+  
 end
