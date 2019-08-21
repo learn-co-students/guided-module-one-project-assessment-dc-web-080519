@@ -23,10 +23,10 @@ class CommandLineInterface
     # back condition
     if input == "back"
       eval(back_page)
-    # index condition
+      # index condition
     elsif (Integer(input) rescue false)
       self.input_to_index(array, input)
-    # text condition
+      # text condition
     else
       return input
     end
@@ -162,12 +162,15 @@ class CommandLineInterface
   def choose_location
     current_location = []
     current_location << self.user.location
-    locations = [
+    locations =
+    [
       "Washington D.C.",
       "New York City",
       "Chicago",
       "Los Angeles"
-      ] - current_location
+    ]-current_location
+
+    # if user has location, remove it from array of options
 
     locations.each_with_index do |location, index|
       puts "#{index + 1}. #{location}"
@@ -261,7 +264,7 @@ class CommandLineInterface
     if input == "edit"
       self.profile_edit
     elsif input == "events"
-      self.find_events #TODO : re-factor user method -find_events and event method -display details
+      self.find_events
     elsif input == "rsvps"
       self.show_rsvps
     else
@@ -365,12 +368,7 @@ class CommandLineInterface
   end
 
   def find_event_handler(input, matched_events)
-    # if input == "back"
-    #   self.display_user_profile
-    # else
-    #   # index = self.process_input(matched_events, "self.display_user_profile")
-      self.display_event_details(matched_events[input])
-    # end
+    self.display_event_details(matched_events[input])
   end
 
   def display_event_details(event)
@@ -387,7 +385,7 @@ class CommandLineInterface
     else
       puts "Type 'rsvp' to add this event to your profile"
     end
-    puts "Type 'back' to go back to the event list"
+    puts "Type 'back' to see more events you may be interested in."
     self.event_detail_handler(self.process_input([], "self.find_events"), event)
   end
 
@@ -402,8 +400,6 @@ class CommandLineInterface
       puts "You have removed your RSVP for #{event.name}"
       sleep 1
       self.find_events
-    elsif input == 'back'
-      self.find_events
     else
       self.invalid_input_prompt
       self.display_event_details(event)
@@ -413,6 +409,39 @@ class CommandLineInterface
   def show_rsvps
     self.clear
     self.list_array(self.user.events)
+    puts "Select an event to see more details."
+    self.rsvp_handler(self.process_input(self.user.events, "self.display_user_profile"))
+  end
+
+  def rsvp_handler(input)
+    self.display_rsvp_details(self.user.events[input])
+  end
+
+  def display_rsvp_details(event)
+    event.reload
+    self.clear
+    puts "Event Name: #{event.name}"
+    puts "Event Description: #{event.description}"
+    puts "Location: #{event.location}"
+    puts "Date/Time: #{event.event_datetime}"
+    puts "Attendees:"
+    self.list_array(event.users)
+    puts
+    puts "Type 'remove' to remove this event from your profile"
+    puts "Type 'back' to return to your RSVP's."
+    self.rsvp_detail_handler(self.process_input([], "self.show_rsvps"), event)
+  end
+
+  def rsvp_detail_handler(input, event)
+    if input == 'remove'
+      self.user.remove_event(event)
+      puts "You have removed your RSVP for #{event.name}"
+      sleep 1
+      self.find_events
+    else
+      self.invalid_input_prompt
+      self.display_rsvp_details(event)
+    end
   end
 
 end

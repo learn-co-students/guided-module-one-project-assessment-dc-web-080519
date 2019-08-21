@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
   def remove_interest(interest_to_delete)
     self.interests.delete(interest_to_delete)
     self.save
-    
+
   end
 
   def matching_events
@@ -33,9 +33,4 @@ class User < ActiveRecord::Base
     self.events.delete(event)
     self.save
   end
-
-
-  # def view_rsvps
-  #   self.list_array(self.events)
-  # end
 end
