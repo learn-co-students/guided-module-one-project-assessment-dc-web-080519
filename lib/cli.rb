@@ -16,28 +16,45 @@ class CommandLineInterface
     puts `clear`
   end
 
-  # take in and standardize user input
-  def get_input
-    input = gets.chomp
-    self.check_exit(input.downcase)
-    input.downcase
+  def process_input(array = nil, back_page=nil)
+    input = gets.chomp.downcase
+    # exit condition
+    self.check_exit(input)
+    # back condition
+    if input == "back"
+      eval(back_page)
+    # index condition
+    elsif (Integer(input) rescue false)
+      self.input_to_index(array, input)
+    # text condition
+    else
+      return input
+    end
   end
+
+  # take in and standardize user input
+  # def get_input
+  #   input = gets.chomp
+  #   self.check_exit(input.downcase)
+  #   input.downcase
+  # end
 
   # convert user input into index for use with arrays
   # (when giving them numbered list options)
-  def input_to_index(array, input = nil)
-    if input == nil
-      input = gets.chomp
-    end
-    self.check_exit(input.downcase)
+  def input_to_index(array, input)
+    # if input == nil
+    #   input = gets.chomp
+    # end
+    # self.check_exit(input.downcase)
     newarray = [*0...array.length]
     index = input.to_i - 1
     if newarray.include?(index)
       return index
     else
       self.invalid_input_prompt
-      self.input_to_index(array, gets.chomp)
-    end 
+      self.process_input(array)
+      # self.input_to_index(array, gets.chomp)
+    end
   end
 
   # display brief error message
@@ -85,7 +102,7 @@ class CommandLineInterface
     puts "Are you a new or returning user?"
     puts "Please enter 'new' or 'returning'"
     puts "Enter (E)xit or Q(uit) to exit the program at anytime"
-    self.welcome_input_handler(self.get_input)
+    self.welcome_input_handler(self.process_input)
   end
 
   # process user input from welcome screen
@@ -106,7 +123,7 @@ class CommandLineInterface
   def create_new_user
     self.clear
     puts "Please enter a desired user name"
-    self.new_user_input_handler(self.get_input)
+    self.new_user_input_handler(self.process_input([],"self.welcome"))
   end
 
   # determine if username already exists
@@ -171,7 +188,7 @@ class CommandLineInterface
     self.user.add_interest(possible_interests[index])
     self.clear
     puts "Type 'more' to add more interests or 'done' to view your profile"
-    self.choose_interests_handler(self.get_input)
+    self.choose_interests_handler(self.process_input(possible_interests, "self.display_user_profile"))
   end
 
   # add another interest or go to profile
@@ -195,7 +212,7 @@ class CommandLineInterface
   def login_page
     self.clear
     puts "Welcome back, please enter your username"
-    self.login_handler(self.get_input)
+    self.login_handler(self.process_input([], "self.welcome"))
   end
 
   def login_handler(username)
@@ -204,7 +221,7 @@ class CommandLineInterface
       self.display_user_profile
     else
       puts "That username does not exist, type 'retry' to try another username OR type 'new' to create a new username"
-      self.login_error_handler(self.get_input)
+      self.login_error_handler(self.process_input([], "self.login_page"))
     end
   end
 
@@ -235,7 +252,7 @@ class CommandLineInterface
     puts "Type 'edit' to change your profile details or interests"
     puts "Type 'events' to find events in your area matching your interests"
     puts "Type 'rsvps' to see all events you have RSVP'd to"
-    self.profile_handler(self.get_input)
+    self.profile_handler(self.process_input([],"self.display_user_profile"))
   end
 
   # process user input from main profile page
@@ -264,29 +281,25 @@ class CommandLineInterface
     2. Location
     3. Interests
 
-    0. Go Back
-
+    Type 'back' to go back to your profile.
     ENTRY
-    self.profile_edit_handler(self.get_input)
+    self.profile_edit_handler(self.process_input(["name", "location", "interests"], "self.display_user_profile"))
   end
 
   def profile_edit_handler(input)
-    if input == "0"
-      self.display_user_profile
-    elsif
-      input == "1"
+    if input == 0
       self.clear
       puts "Please enter your new name:"
       self.set_name(gets.chomp)
       self.user.save
       self.display_user_profile
-    elsif input == "2"
+    elsif input == 1
       self.clear
       puts "Please enter your new location:"
       self.choose_location
       self.user.save
       self.display_user_profile
-    elsif input == "3"
+    elsif input == 2
       self.clear
       self.add_or_remove_interests
     else
@@ -345,7 +358,7 @@ class CommandLineInterface
       puts "No events found in your location matching your interests"
       sleep 0.7
       self.display_user_profile
-    else 
+    else
       self.list_array(matched_events)
       puts ""
       puts "Please select an event to see more details on or type 'back' to go back"
@@ -356,13 +369,13 @@ class CommandLineInterface
   def find_event_handler(input, matched_events)
     if input == "back"
       self.display_user_profile
-    else 
+    else
       index = self.input_to_index(matched_events, input)
       self.display_event_details(matched_events[index])
     end
   end
-      
-  
+
+
   def display_event_details(event)
     self.clear
     puts "Event Name: #{event.name}"
@@ -404,5 +417,5 @@ class CommandLineInterface
     self.clear
     self.list_array(self.user.events)
   end
-  
+
 end
