@@ -32,28 +32,15 @@ class CommandLineInterface
     end
   end
 
-  # take in and standardize user input
-  # def get_input
-  #   input = gets.chomp
-  #   self.check_exit(input.downcase)
-  #   input.downcase
-  # end
-
   # convert user input into index for use with arrays
   # (when giving them numbered list options)
   def input_to_index(array, input)
-    # if input == nil
-    #   input = gets.chomp
-    # end
-    # self.check_exit(input.downcase)
-    newarray = [*0...array.length]
     index = input.to_i - 1
-    if newarray.include?(index)
-      return index
-    else
+    if (array.length - 1) < index.abs
       self.invalid_input_prompt
       self.process_input(array)
-      # self.input_to_index(array, gets.chomp)
+    else
+      return index
     end
   end
 
@@ -160,6 +147,7 @@ class CommandLineInterface
 
   # provide user a list of valid locations & return the one they select
   def choose_location
+    self.clear
     current_location = []
     current_location << self.user.location
     locations =
@@ -168,16 +156,20 @@ class CommandLineInterface
       "New York City",
       "Chicago",
       "Los Angeles"
-    ]-current_location
-
-    # if user has location, remove it from array of options
+    ]-current_location # if user has location, remove it from array of options
 
     locations.each_with_index do |location, index|
       puts "#{index + 1}. #{location}"
-    end # TODO: refactor #list_array into normal & object-based version
-    index = self.process_input(locations, "self.choose_location")
-    self.clear
-    self.user.location = locations[index]
+    end
+
+    index = self.process_input(locations, "self.display_user_profile")
+
+    if !index.is_a?(Integer)
+      self.invalid_input_prompt
+      self.choose_location
+    else
+      self.user.location = locations[index]
+    end
   end
 
   # let user add an interest, with option to repeat or go to profile
@@ -437,7 +429,7 @@ class CommandLineInterface
       self.user.remove_event(event)
       puts "You have removed your RSVP for #{event.name}"
       sleep 1
-      self.find_events
+      self.show_rsvps
     else
       self.invalid_input_prompt
       self.display_rsvp_details(event)
