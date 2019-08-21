@@ -178,13 +178,21 @@ class CommandLineInterface
     puts "Please select an interest to add to your profile:"
     # list all available interests the user hasn't added to their profile
     possible_interests = Interest.all - self.user.interests
-    self.list_array(possible_interests)
-    # get user choice and call User#add_interest to create interest association
-    index = self.process_input(possible_interests, "self.add_or_remove_interests")
-    self.user.add_interest(possible_interests[index])
-    self.clear
-    puts "Type 'more' to add more interests or 'done' to view your profile"
-    self.choose_interests_handler(self.process_input(possible_interests, "self.add_or_remove_interests"))
+    #check to auto-complete profile if all interests are selected
+    if possible_interests == []
+      self.clear
+      puts "There are no additional interests to select. Returning you to your profile."
+      sleep 1
+      self.choose_interests_handler("done")
+    else
+      self.list_array(possible_interests)
+      # get user choice and call User#add_interest to create interest association
+      index = self.process_input(possible_interests, "self.add_or_remove_interests")
+      self.user.add_interest(possible_interests[index])
+      self.clear
+      puts "Type 'more' to add more interests or 'done' to view your profile"
+      self.choose_interests_handler(self.process_input(possible_interests, "self.add_or_remove_interests"))
+    end
   end
 
   # add another interest or go to profile
