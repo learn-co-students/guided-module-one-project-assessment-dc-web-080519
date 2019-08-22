@@ -1,5 +1,6 @@
 class CommandLineInterface
   attr_accessor :user
+  PROMPT = TTY::Prompt.new
 
   ###############################################################################
   ##### HELPER METHODS ##########################################################
@@ -361,10 +362,18 @@ class CommandLineInterface
       sleep 0.7
       self.display_user_profile
     else
-      self.list_array(matched_events)
-      puts ""
-      puts "Please select the number of an event to see more details on or type 'back' to return to your profile"
-      self.find_event_handler(self.process_input(matched_events, "self.display_user_profile"), matched_events)
+      choiceshash = {}
+      matched_events.each do |event|
+        choiceshash[event.name] = "self.display_event_details('#{event.name}')"
+      end
+      choiceshash["BACK"] = 'self.display_user_profile'
+      choiceshash["LOGOUT"] = 'exit'
+      eval(PROMPT.select("Choose an event to see more details", choiceshash))
+      #binding.pry
+      # self.list_array(matched_events)
+      # puts ""
+      # puts "Please select the number of an event to see more details on or type 'back' to return to your profile"
+      # self.find_event_handler(self.process_input(matched_events, "self.display_user_profile"), matched_events)
     end
   end
 
@@ -372,8 +381,9 @@ class CommandLineInterface
     self.display_event_details(matched_events[input])
   end
 
-  def display_event_details(event)
+  def display_event_details(eventname)
     self.clear
+    event = Event.find_by(name: eventname)
     puts "Event Name: #{event.name}"
     puts "Event Description: #{event.description}"
     puts "Location: #{event.location}"
