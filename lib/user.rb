@@ -6,12 +6,14 @@ class User < ActiveRecord::Base
 
   def add_interest(interest)
     self.interests << interest
-  end
+    self.save
+    self.reload
+end
 
   def remove_interest(interest_to_delete)
     self.interests.delete(interest_to_delete)
     self.save
-
+    self.reload
   end
 
   def matching_events
@@ -27,10 +29,12 @@ class User < ActiveRecord::Base
   def rsvp_to(event)
     self.events << event
     self.save
-  end
+    self.reload
+end
 
   def remove_event(event)
     self.events.delete(event)
     self.save
-  end
+    self.reload
+end
 end
