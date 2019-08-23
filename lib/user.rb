@@ -5,9 +5,11 @@ class User < ActiveRecord::Base
   has_many :events, through: :rsvps
 
   def add_interest(interest)
-    self.interests << interest
-    self.save
-    self.reload
+    if !self.interests.include?(interest)
+      self.interests << interest
+      self.save
+      self.reload
+    end
 end
 
   def remove_interest(interest_to_delete)
@@ -27,9 +29,11 @@ end
   end
 
   def rsvp_to(event)
-    self.events << event
-    self.save
-    self.reload
+    if !self.events.include?(event)
+      self.events << event
+      self.save
+      self.reload
+    end
 end
 
   def remove_event(event)
