@@ -28,7 +28,7 @@ Enter your username to see your account homepage. (Password features under const
 #### View Events
 ![View Events](img/view_events.png)
 
-See a list of events in your area you may be interested in. Sample event names provided by the Hipster module of the Faker gem. Selecting an event takes you to more details about it, with the option to add or remove an RSVP to it.
+See a list of events in your area you may be interested in. Sample event names provided by the Hipster library of the Faker gem. Selecting an event takes you to more details about it, with the option to add or remove an RSVP to it.
 
 #### View your RSVPs
 
