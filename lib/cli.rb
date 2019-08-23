@@ -337,8 +337,8 @@ class CommandLineInterface
       user_events.each do |event|
         choices[event.name] = "self.display_event_details('#{event.name}', 'self.show_rsvps')"
       end
-      choices["BACK"] = 'self.display_user_profile'
-      choices["LOGOUT"] = 'self.logout'
+      choices["[] BACK"] = 'self.display_user_profile'
+      choices["[] LOGOUT"] = 'self.logout'
       # selection returns method call as string; execute that call
       eval(PROMPT.select("Choose an event to see more details", choices, per_page:45))
     end
